@@ -1,54 +1,157 @@
 {
   "annotations": {
-    "list": []
+    "list": [
+      {
+        "builtIn": 1,
+        "datasource": "-- Grafana --",
+        "enable": true,
+        "hide": true,
+        "iconColor": "rgba(0, 211, 255, 1)",
+        "name": "Annotations & Alerts",
+        "type": "dashboard"
+      }
+    ]
   },
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 0,
+  "id": null,
+  "links": [],
   "panels": [
     {
-      "type": "graph",
-      "title": "Tempo médio de resposta (Prometheus)",
+      "datasource": "Prometheus",
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": []
+      },
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 0 },
+      "id": 1,
+      "options": {
+        "showPoints": "never",
+        "tooltip": { "mode": "single" }
+      },
       "targets": [
         {
-          "expr": "rate(http_request_duration_seconds_sum[1m]) / rate(http_request_duration_seconds_count[1m])",
+          "expr": "sum by (route) (http_requests_total)",
+          "legendFormat": "{{route}}",
           "refId": "A"
         }
       ],
-      "id": 1
+      "title": "Total de Requisições por Rota",
+      "type": "timeseries"
     },
     {
-      "type": "graph",
-      "title": "Requisições por minuto (Prometheus)",
+      "datasource": "Prometheus",
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": []
+      },
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 0 },
+      "id": 2,
       "targets": [
         {
-          "expr": "sum(rate(http_requests_total[1m]))",
-          "refId": "B"
+          "expr":
+            "sum(rate(http_requests_total[1m])) by (route)",
+          "legendFormat": "{{route}}",
+          "refId": "A"
         }
       ],
-      "id": 2
+      "title": "RPS – Requests por Segundo",
+      "type": "timeseries"
     },
     {
-      "type": "table",
-      "title": "Últimos registros (SQL)",
+      "datasource": "Prometheus",
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 8 },
+      "id": 3,
       "targets": [
         {
-          "rawSql": "SELECT id, categoria, valor, data_venda FROM vendas ORDER BY id DESC LIMIT 20;",
-          "refId": "C"
+          "expr": "sum(rate(http_request_duration_seconds_sum[1m])) / sum(rate(http_request_duration_seconds_count[1m]))",
+          "legendFormat": "Latência Média",
+          "refId": "A"
         }
       ],
-      "id": 3
+      "title": "Latência Média (s)",
+      "type": "timeseries"
     },
     {
-      "type": "graph",
-      "title": "Vendas por categoria (SQL)",
+      "datasource": "Prometheus",
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 8 },
+      "id": 4,
       "targets": [
         {
-          "rawSql": "SELECT categoria, SUM(valor) AS total_vendas FROM vendas GROUP BY categoria ORDER BY total_vendas DESC;",
-          "refId": "D"
+          "expr": "rate(http_request_duration_seconds_bucket[1m])",
+          "legendFormat": "{{le}}",
+          "refId": "A"
         }
       ],
-      "id": 4
+      "title": "Histograma de Latência",
+      "type": "heatmap"
+    },
+    {
+      "datasource": "Prometheus",
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 16 },
+      "id": 5,
+      "targets": [
+        {
+          "expr": "sum by (status) (http_requests_total)",
+          "legendFormat": "Status {{status}}",
+          "refId": "A"
+        }
+      ],
+      "title": "Requisições por Status Code",
+      "type": "barchart"
+    },
+    {
+      "datasource": "PostgreSQL",
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 16 },
+      "id": 6,
+      "targets": [
+        {
+          "format": "table",
+          "rawSql": "SELECT categoria, valor, data_venda FROM vendas ORDER BY data_venda DESC LIMIT 20;",
+          "refId": "A"
+        }
+      ],
+      "title": "Últimas 20 Vendas",
+      "type": "table"
+    },
+    {
+      "datasource": "Prometheus",
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 24 },
+      "id": 7,
+      "targets": [
+        {
+          "expr": "process_cpu_user_seconds_total",
+          "legendFormat": "CPU User Time",
+          "refId": "A"
+        }
+      ],
+      "title": "CPU – Node.js",
+      "type": "timeseries"
+    },
+    {
+      "datasource": "Prometheus",
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 24 },
+      "id": 8,
+      "targets": [
+        {
+          "expr": "process_resident_memory_bytes",
+          "legendFormat": "Memória",
+          "refId": "A"
+        }
+      ],
+      "title": "Uso de Memória – Node.js",
+      "type": "timeseries"
     }
   ],
-  "title": "Dashboard Observabilidade - Exemplo",
-  "schemaVersion": 30,
-  "version": 1
+  "refresh": "5s",
+  "schemaVersion": 38,
+  "style": "dark",
+  "tags": ["observabilidade", "api", "prometheus"],
+  "templating": { "list": [] },
+  "time": { "from": "now-5m", "to": "now" },
+  "timezone": "",
+  "title": "Dashboard – API + Prometheus + PostgreSQL",
+  "version": 1,
+  "weekStart": ""
 }

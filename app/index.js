@@ -5,7 +5,7 @@ const app = express();
 const register = client.register;
 
 const pool = new Pool({
-  host: "localhost",
+  host: "db",
   user: "postgres",
   password: "password",
   database: "postgres",

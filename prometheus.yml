@@ -1,8 +1,10 @@
-global:
-  scrape_interval: 5s
+grafana:
+  image: grafana/grafana
+  user: "root"
+  ports:
+    - "3001:3000"
+  volumes:
+    - grafana-storage:/var/lib/grafana
+  networks:
+    - stack
 
-scrape_configs:
-  - job_name: 'api'
-    metrics_path: '/metrics'
-    static_configs:
-      - targets: ['localhost:3000']
