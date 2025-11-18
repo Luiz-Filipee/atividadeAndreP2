@@ -5,10 +5,11 @@ const app = express();
 const register = client.register;
 
 const pool = new Pool({
-  host: "db",
+  host: "localhost",
   user: "postgres",
-  password: "postgres",
-  database: "empresa",
+  password: "password",
+  database: "postgres",
+  port: 5432
 });
 
 const httpRequestCounter = new client.Counter({

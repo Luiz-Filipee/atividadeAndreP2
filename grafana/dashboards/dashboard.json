@@ -1,0 +1,54 @@
+{
+  "annotations": {
+    "list": []
+  },
+  "panels": [
+    {
+      "type": "graph",
+      "title": "Tempo médio de resposta (Prometheus)",
+      "targets": [
+        {
+          "expr": "rate(http_request_duration_seconds_sum[1m]) / rate(http_request_duration_seconds_count[1m])",
+          "refId": "A"
+        }
+      ],
+      "id": 1
+    },
+    {
+      "type": "graph",
+      "title": "Requisições por minuto (Prometheus)",
+      "targets": [
+        {
+          "expr": "sum(rate(http_requests_total[1m]))",
+          "refId": "B"
+        }
+      ],
+      "id": 2
+    },
+    {
+      "type": "table",
+      "title": "Últimos registros (SQL)",
+      "targets": [
+        {
+          "rawSql": "SELECT id, categoria, valor, data_venda FROM vendas ORDER BY id DESC LIMIT 20;",
+          "refId": "C"
+        }
+      ],
+      "id": 3
+    },
+    {
+      "type": "graph",
+      "title": "Vendas por categoria (SQL)",
+      "targets": [
+        {
+          "rawSql": "SELECT categoria, SUM(valor) AS total_vendas FROM vendas GROUP BY categoria ORDER BY total_vendas DESC;",
+          "refId": "D"
+        }
+      ],
+      "id": 4
+    }
+  ],
+  "title": "Dashboard Observabilidade - Exemplo",
+  "schemaVersion": 30,
+  "version": 1
+}
